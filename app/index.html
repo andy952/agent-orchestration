@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project Pulse</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="dashboard">
+    <header class="dashboard-header">
+      <h1>Project Pulse</h1>
+      <p class="dashboard-subtitle">Status, priority and recent activity for every team project at a glance.</p>
+    </header>
+    <section class="project-grid" aria-live="polite">
+      <p class="dashboard-message dashboard-message--loading" role="status">Loading projects…</p>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var DATA_URL = 'project-data.json';
+      var LAUNCH_NAME = 'Run Project Pulse Dashboard';
+
+      var STATUS_SLUGS = {
+        'on track': 'on-track',
+        'at risk': 'at-risk',
+        'blocked': 'blocked',
+        'completed': 'completed'
+      };
+
+      var PRIORITY_SLUGS = {
+        'high': 'high',
+        'medium': 'medium',
+        'low': 'low'
+      };
+
+      var grid = document.querySelector('.project-grid');
+
+      function textOrFallback(value, fallback) {
+        if (typeof value === 'string' && value.trim() !== '') {
+          return value.trim();
+        }
+        if (typeof value === 'number') {
+          return String(value);
+        }
+        return fallback;
+      }
+
+      function toSlug(value, slugMap) {
+        if (typeof value !== 'string') {
+          return 'unknown';
+        }
+        var key = value.trim().toLowerCase();
+        return Object.prototype.hasOwnProperty.call(slugMap, key) ? slugMap[key] : 'unknown';
+      }
+
+      function createElementWithText(tagName, className, text) {
+        var element = document.createElement(tagName);
+        element.className = className;
+        element.textContent = text;
+        return element;
+      }
+
+      function clearGrid() {
+        while (grid.firstChild) {
+          grid.removeChild(grid.firstChild);
+        }
+      }
+
+      function showMessage(kind, text) {
+        clearGrid();
+        var message = createElementWithText('p', 'dashboard-message dashboard-message--' + kind, text);
+        message.setAttribute('role', 'status');
+        grid.appendChild(message);
+      }
+
+      function createProjectCard(project) {
+        var name = textOrFallback(project.name, 'Untitled project');
+        var owner = textOrFallback(project.owner, 'Unassigned');
+        var statusLabel = textOrFallback(project.status, 'Unknown');
+        var recentActivity = textOrFallback(project.recentActivity, 'No recent activity');
+        var priorityLabel = textOrFallback(project.priority, 'Unknown');
+
+        var statusSlug = toSlug(project.status, STATUS_SLUGS);
+        var prioritySlug = toSlug(project.priority, PRIORITY_SLUGS);
+
+        var card = document.createElement('article');
+        card.className = 'project-card';
+        card.setAttribute('data-priority', prioritySlug);
+        card.setAttribute('data-status', statusSlug);
+
+        card.appendChild(createElementWithText('h2', 'project-name', name));
+        card.appendChild(createElementWithText('p', 'project-owner', 'Owner: ' + owner));
+
+        var badges = document.createElement('div');
+        badges.className = 'project-badges';
+        badges.appendChild(createElementWithText('span', 'status-badge status-' + statusSlug, 'Status: ' + statusLabel));
+        badges.appendChild(createElementWithText('span', 'priority-badge priority-' + prioritySlug, 'Priority: ' + priorityLabel));
+        card.appendChild(badges);
+
+        card.appendChild(createElementWithText('p', 'project-activity', recentActivity));
+
+        var summary = textOrFallback(project.summary, '');
+        if (summary !== '') {
+          card.appendChild(createElementWithText('p', 'project-summary', summary));
+        }
+
+        return card;
+      }
+
+      function renderProjects(projects) {
+        if (projects.length === 0) {
+          showMessage('empty', 'No active projects yet.');
+          return;
+        }
+
+        clearGrid();
+        projects.forEach(function (project) {
+          var safeProject = (project && typeof project === 'object') ? project : {};
+          grid.appendChild(createProjectCard(safeProject));
+        });
+      }
+
+      function loadProjects() {
+        if (location.protocol === 'file:') {
+          showMessage('error',
+            'Project data cannot load when this page is opened directly from disk. ' +
+            'Open this dashboard with the "' + LAUNCH_NAME + '" launch configuration (it serves app/ over http).');
+          return;
+        }
+
+        fetch(DATA_URL)
+          .catch(function () {
+            throw new Error('Could not reach ' + DATA_URL + '. Start the "' + LAUNCH_NAME + '" launch configuration and try again.');
+          })
+          .then(function (response) {
+            if (!response.ok) {
+              throw new Error('Could not load ' + DATA_URL + ' (HTTP ' + response.status +
+                (response.statusText ? ' ' + response.statusText : '') + ').');
+            }
+            return response.text().then(function (body) {
+              try {
+                return JSON.parse(body);
+              } catch (parseError) {
+                throw new Error('Project data could not be read.');
+              }
+            });
+          })
+          .then(function (data) {
+            if (!data || !Array.isArray(data.projects)) {
+              throw new Error('Project data is missing the expected "projects" key, or "projects" is not a list.');
+            }
+            renderProjects(data.projects);
+          })
+          .catch(function (error) {
+            var detail = error && error.message ? error.message : 'Unknown error while loading projects.';
+            showMessage('error', detail);
+          });
+      }
+
+      loadProjects();
+    })();
+  </script>
+</body>
+</html>

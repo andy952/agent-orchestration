@@ -1,0 +1,42 @@
+{
+  "projects": [
+    {
+      "name": "Checkout Redesign",
+      "owner": "Mona Lisa",
+      "status": "On track",
+      "recentActivity": "Merged the new payment form layout and closed three accessibility issues.",
+      "priority": "High",
+      "summary": "A simpler checkout flow with fewer steps and clearer error messages."
+    },
+    {
+      "name": "Customer Onboarding Experience Modernization and Self-Service Account Migration Initiative",
+      "owner": "Jamal Okafor",
+      "status": "At risk",
+      "recentActivity": "Migration dry run uncovered duplicate account records in the legacy CRM export, so the team paused the cutover, opened a data-cleanup ticket with the platform group, drafted a rollback checklist, and scheduled a follow-up review with support leads to agree on how affected customers will be contacted before the new self-service flow goes live.",
+      "priority": "Medium",
+      "summary": "Moves new customers onto a guided, self-service sign-up and account setup flow."
+    },
+    {
+      "name": "Search Indexing Service",
+      "owner": "Priya Raman",
+      "status": "Blocked",
+      "recentActivity": "Waiting on infrastructure approval for the new search cluster.",
+      "priority": "High"
+    },
+    {
+      "name": "Docs Site Refresh",
+      "owner": "Alex Chen",
+      "status": "Completed",
+      "recentActivity": "Published the refreshed contributor guide and retired the old wiki pages.",
+      "priority": "Low",
+      "summary": "Clearer contributor docs with updated navigation and examples."
+    },
+    {
+      "name": "Mobile Notifications",
+      "owner": "Sofia Martinez",
+      "status": "On track",
+      "recentActivity": "Shipped notification preferences to the beta channel.",
+      "priority": "Low"
+    }
+  ]
+}

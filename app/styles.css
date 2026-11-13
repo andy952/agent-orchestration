@@ -1,0 +1,558 @@
+/* ==========================================================================
+   Project Pulse – dashboard styles
+   Owner: Designer. Styles the shared markup contract in
+   docs/project-pulse-plan.md. All text/background pairs meet WCAG AA
+   (>= 4.5:1); status and priority are never conveyed by colour alone
+   (each badge keeps its text label and adds a shape glyph).
+   ========================================================================== */
+
+/* ---------- Design tokens ---------- */
+:root {
+  /* Surfaces & text */
+  --pp-bg: #f3f5f9;
+  --pp-bg-accent: #e8edf7;
+  --pp-surface: #ffffff;
+  --pp-text: #1b2333;          /* 15.6:1 on white */
+  --pp-text-muted: #4a5568;    /* 7.5:1 on white  */
+  --pp-border: #d9dee8;
+  --pp-brand: #3346c4;         /* 7.0:1 on white  */
+
+  /* Focus */
+  --pp-focus: #1d4ed8;
+  --pp-focus-ring: 0 0 0 3px #ffffff, 0 0 0 6px var(--pp-focus);
+
+  /* Status badges (text on tinted bg, all >= 7:1) */
+  --pp-on-track-bg: #dcf5e6;
+  --pp-on-track-fg: #14532d;
+  --pp-on-track-bd: #7cc69a;
+  --pp-at-risk-bg: #fdf0c8;
+  --pp-at-risk-fg: #713f12;
+  --pp-at-risk-bd: #e0b44a;
+  --pp-blocked-bg: #fde2e1;
+  --pp-blocked-fg: #7f1d1d;
+  --pp-blocked-bd: #ec8a86;
+  --pp-completed-bg: #dfe8fd;
+  --pp-completed-fg: #1e3a8a;
+  --pp-completed-bd: #8fa9ec;
+  --pp-unknown-bg: #eef0f4;
+  --pp-unknown-fg: #374151;
+  --pp-unknown-bd: #b5bcc8;
+
+  /* Priority accents */
+  --pp-high: #b42318;          /* white text on this: 6.6:1 */
+  --pp-high-edge: #e0472c;
+  --pp-medium-bg: #fdf0c8;
+  --pp-medium-fg: #713f12;
+  --pp-medium-edge: #d99a0b;
+  --pp-low-fg: #4a5568;
+  --pp-low-edge: #a7b0be;
+  --pp-unknown-edge: #b5bcc8;
+
+  /* Shape & depth */
+  --pp-radius-lg: 14px;
+  --pp-radius-md: 12px;
+  --pp-radius-pill: 999px;
+  --pp-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.08);
+  --pp-shadow-md: 0 2px 4px rgba(16, 24, 40, 0.06), 0 6px 16px rgba(16, 24, 40, 0.08);
+  --pp-shadow-lg: 0 4px 8px rgba(16, 24, 40, 0.07), 0 14px 30px rgba(16, 24, 40, 0.12);
+
+  /* Spacing scale */
+  --pp-space-1: 0.25rem;
+  --pp-space-2: 0.5rem;
+  --pp-space-3: 0.75rem;
+  --pp-space-4: 1rem;
+  --pp-space-5: 1.5rem;
+  --pp-space-6: 2rem;
+  --pp-space-7: 3rem;
+
+  /* Type */
+  --pp-font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+
+  --pp-transition: 160ms ease;
+}
+
+/* ---------- Base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--pp-font);
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--pp-text);
+  background:
+    radial-gradient(1200px 400px at 10% -10%, var(--pp-bg-accent), transparent 70%),
+    var(--pp-bg);
+  overflow-x: hidden; /* safety net: no horizontal scroll at 320px */
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--pp-brand);
+}
+
+/* Visible keyboard focus everywhere */
+:focus-visible {
+  outline: 3px solid var(--pp-focus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---------- Dashboard container ---------- */
+.dashboard {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--pp-space-7) var(--pp-space-6) var(--pp-space-7);
+}
+
+/* ---------- Header ---------- */
+.dashboard-header {
+  margin-bottom: var(--pp-space-6);
+  padding-bottom: var(--pp-space-5);
+  border-bottom: 1px solid var(--pp-border);
+}
+
+.dashboard-header h1 {
+  display: flex;
+  align-items: center;
+  gap: var(--pp-space-3);
+  font-size: clamp(1.75rem, 1.3rem + 2vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--pp-text);
+  overflow-wrap: anywhere;
+}
+
+/* Decorative "pulse" mark beside the title */
+.dashboard-header h1::before {
+  content: "";
+  flex: none;
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 50%;
+  background: var(--pp-brand);
+  box-shadow: 0 0 0 0.18em rgba(51, 70, 196, 0.18);
+}
+
+.dashboard-subtitle {
+  margin-top: var(--pp-space-2);
+  max-width: 60ch;
+  font-size: 1.0625rem;
+  color: var(--pp-text-muted);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Card grid ---------- */
+.project-grid {
+  display: grid;
+  /* min() prevents the 280px track from overflowing very narrow viewports */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: var(--pp-space-5);
+  align-items: stretch;
+}
+
+/* ---------- Project card ---------- */
+.project-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--pp-space-3);
+  min-width: 0;
+  padding: var(--pp-space-5);
+  padding-left: calc(var(--pp-space-5) + 2px);
+  background: var(--pp-surface);
+  color: var(--pp-text);
+  border: 1px solid var(--pp-border);
+  border-left: 6px solid var(--pp-unknown-edge);
+  border-radius: var(--pp-radius-md);
+  box-shadow: var(--pp-shadow-md);
+  overflow-wrap: anywhere;
+  word-break: normal;
+  transition:
+    transform var(--pp-transition),
+    box-shadow var(--pp-transition),
+    border-color var(--pp-transition);
+}
+
+.project-card:hover,
+.project-card:focus-within {
+  transform: translateY(-3px);
+  box-shadow: var(--pp-shadow-lg);
+}
+
+.project-card:focus-visible,
+.project-card:focus-within {
+  outline: 3px solid var(--pp-focus);
+  outline-offset: 3px;
+}
+
+/* Priority edge on the card (shape/weight varies too, not only colour) */
+.project-card[data-priority="high"] {
+  border-left: 8px solid var(--pp-high-edge);
+}
+
+.project-card[data-priority="medium"] {
+  border-left: 6px solid var(--pp-medium-edge);
+}
+
+.project-card[data-priority="low"] {
+  border-left: 4px solid var(--pp-low-edge);
+}
+
+.project-card[data-priority="unknown"] {
+  border-left: 4px dashed var(--pp-unknown-edge);
+}
+
+/* Subtle surface hint for blocked / completed cards */
+.project-card[data-status="blocked"] {
+  background: linear-gradient(180deg, #fff8f8 0%, var(--pp-surface) 40%);
+}
+
+.project-card[data-status="completed"] .project-name {
+  color: var(--pp-text-muted);
+}
+
+/* ---------- Card content ---------- */
+.project-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--pp-text);
+  overflow-wrap: anywhere;
+}
+
+.project-owner {
+  font-size: 0.9375rem;
+  color: var(--pp-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.project-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pp-space-2);
+  margin: var(--pp-space-1) 0;
+}
+
+.project-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--pp-space-1) var(--pp-space-3);
+  font-size: 0.9375rem;
+  color: var(--pp-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.project-meta strong,
+.project-meta dt,
+.project-meta .label {
+  font-weight: 600;
+  color: var(--pp-text);
+}
+
+.project-activity {
+  padding-top: var(--pp-space-3);
+  border-top: 1px solid var(--pp-border);
+  font-size: 0.9375rem;
+  color: var(--pp-text);
+  overflow-wrap: anywhere;
+}
+
+.project-summary {
+  font-size: 0.9375rem;
+  color: var(--pp-text-muted);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Shared badge shape ---------- */
+.status-badge,
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  max-width: 100%;
+  padding: 0.25rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: var(--pp-radius-pill);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Glyphs give a non-colour cue. The "/ ''" alt text hides them from
+   assistive tech where supported; the first declaration is a fallback. */
+.status-badge::before,
+.priority-badge::before {
+  flex: none;
+  font-size: 0.95em;
+  line-height: 1;
+}
+
+/* ---------- Status badges ---------- */
+.status-on-track {
+  background: var(--pp-on-track-bg);
+  color: var(--pp-on-track-fg);
+  border-color: var(--pp-on-track-bd);
+}
+.status-on-track::before {
+  content: "\25CF"; /* ● */
+  content: "\25CF" / "";
+}
+
+.status-at-risk {
+  background: var(--pp-at-risk-bg);
+  color: var(--pp-at-risk-fg);
+  border-color: var(--pp-at-risk-bd);
+}
+.status-at-risk::before {
+  content: "\25B2"; /* ▲ */
+  content: "\25B2" / "";
+}
+
+.status-blocked {
+  background: var(--pp-blocked-bg);
+  color: var(--pp-blocked-fg);
+  border-color: var(--pp-blocked-bd);
+  font-weight: 700;
+}
+.status-blocked::before {
+  content: "\25A0"; /* ■ */
+  content: "\25A0" / "";
+}
+
+.status-completed {
+  background: var(--pp-completed-bg);
+  color: var(--pp-completed-fg);
+  border-color: var(--pp-completed-bd);
+}
+.status-completed::before {
+  content: "\2713"; /* ✓ */
+  content: "\2713" / "";
+}
+
+.status-unknown {
+  background: var(--pp-unknown-bg);
+  color: var(--pp-unknown-fg);
+  border: 1px dashed var(--pp-unknown-bd);
+}
+.status-unknown::before {
+  content: "?";
+  content: "?" / "";
+}
+
+/* ---------- Priority badges ---------- */
+.priority-high {
+  background: var(--pp-high);
+  color: #ffffff;
+  border-color: var(--pp-high);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.priority-high::before {
+  content: "\2191"; /* ↑ */
+  content: "\2191" / "";
+  font-weight: 800;
+}
+
+.priority-medium {
+  background: var(--pp-medium-bg);
+  color: var(--pp-medium-fg);
+  border-color: var(--pp-medium-edge);
+  font-weight: 700;
+}
+.priority-medium::before {
+  content: "\2192"; /* → */
+  content: "\2192" / "";
+}
+
+.priority-low {
+  background: transparent;
+  color: var(--pp-low-fg);
+  border-color: var(--pp-low-edge);
+  font-weight: 500;
+}
+.priority-low::before {
+  content: "\2193"; /* ↓ */
+  content: "\2193" / "";
+}
+
+.priority-unknown {
+  background: transparent;
+  color: var(--pp-unknown-fg);
+  border: 1px dashed var(--pp-unknown-bd);
+  font-weight: 500;
+}
+.priority-unknown::before {
+  content: "\2013"; /* – */
+  content: "\2013" / "";
+}
+
+/* ---------- State messages (loading / empty / error) ---------- */
+.dashboard-message {
+  grid-column: 1 / -1; /* span the full grid if rendered inside it */
+  display: flex;
+  align-items: flex-start;
+  gap: var(--pp-space-3);
+  padding: var(--pp-space-5);
+  background: var(--pp-surface);
+  color: var(--pp-text);
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius-lg);
+  box-shadow: var(--pp-shadow-sm);
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-message::before {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.dashboard-message--loading {
+  color: var(--pp-text-muted);
+}
+.dashboard-message--loading::before {
+  content: "";
+  border: 3px solid var(--pp-border);
+  border-top-color: var(--pp-brand);
+  animation: pp-spin 0.9s linear infinite;
+}
+
+.dashboard-message--empty {
+  justify-content: center;
+  border-style: dashed;
+  border-width: 2px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--pp-text-muted);
+  text-align: center;
+}
+.dashboard-message--empty::before {
+  content: "\2205"; /* ∅ */
+  content: "\2205" / "";
+  background: var(--pp-unknown-bg);
+  color: var(--pp-unknown-fg);
+}
+
+.dashboard-message--error {
+  background: var(--pp-blocked-bg);
+  color: var(--pp-blocked-fg);
+  border-color: var(--pp-blocked-bd);
+  border-left: 6px solid var(--pp-high);
+  font-weight: 500;
+}
+.dashboard-message--error::before {
+  content: "!";
+  content: "!" / "";
+  background: var(--pp-high);
+  color: #ffffff;
+}
+
+@keyframes pp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 600px) {
+  .dashboard {
+    padding: var(--pp-space-5) var(--pp-space-4) var(--pp-space-6);
+  }
+
+  .dashboard-header {
+    margin-bottom: var(--pp-space-5);
+    padding-bottom: var(--pp-space-4);
+  }
+
+  .project-grid {
+    grid-template-columns: 1fr;
+    gap: var(--pp-space-4);
+  }
+
+  .project-card {
+    padding: var(--pp-space-4);
+  }
+
+  .dashboard-message {
+    padding: var(--pp-space-4);
+  }
+}
+
+@media (max-width: 360px) {
+  .dashboard {
+    padding-left: var(--pp-space-3);
+    padding-right: var(--pp-space-3);
+  }
+
+  .project-name {
+    font-size: 1.125rem;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .project-card:hover,
+  .project-card:focus-within {
+    transform: none;
+  }
+}
+
+/* ---------- Windows High Contrast / forced colours ---------- */
+@media (forced-colors: active) {
+  .project-card,
+  .status-badge,
+  .priority-badge,
+  .dashboard-message {
+    border: 1px solid CanvasText;
+  }
+
+  .project-card[data-priority="high"] {
+    border-left: 8px solid CanvasText;
+  }
+
+  :focus-visible,
+  .project-card:focus-within {
+    outline: 3px solid Highlight;
+  }
+}
